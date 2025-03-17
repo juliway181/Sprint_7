@@ -2,14 +2,24 @@ import allure
 import pytest
 from src import data
 
-
 class TestCreateCourier:
-
     @allure.title('Проверка создания курьера с вводом всех корректных данных')
     def test_create_courier(self, create_courier_model):
         create_courier_model.create_couriers(data.create_courier_payload)
         create_courier_model.check_status_code(201)
         create_courier_model.check_user_created()
+
+        # Логинимся под созданным курьером, чтобы получить его ID
+        login_payload = {
+            "login": data.create_courier_payload["login"],
+            "password": data.create_courier_payload["password"]
+        }
+        response = create_courier_model.login(login_payload)
+        courier_id = response.json()["id"]
+
+        # Удаляем созданного курьера
+        create_courier_model.delete_courier(courier_id)
+        create_courier_model.check_status_code(200)
 
     @allure.title("Проверка вывода ошибки при создании курьера без логина или пароля")
     @pytest.mark.parametrize('params', ['login', 'password'])
