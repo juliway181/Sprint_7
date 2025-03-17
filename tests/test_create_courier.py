@@ -9,7 +9,6 @@ class TestCreateCourier:
         create_courier_model.check_status_code(201)
         create_courier_model.check_user_created()
 
-        # Логинимся под созданным курьером, чтобы получить его ID
         login_payload = {
             "login": data.create_courier_payload["login"],
             "password": data.create_courier_payload["password"]
@@ -17,7 +16,6 @@ class TestCreateCourier:
         response = create_courier_model.login(login_payload)
         courier_id = response.json()["id"]
 
-        # Удаляем созданного курьера
         create_courier_model.delete_courier(courier_id)
         create_courier_model.check_status_code(200)
 
